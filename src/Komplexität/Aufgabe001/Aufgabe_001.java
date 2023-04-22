@@ -1,5 +1,6 @@
 package Komplexität.Aufgabe001;
 
+import java.util.LinkedList;
 import java.util.Map;
 
 public class Aufgabe_001 {
