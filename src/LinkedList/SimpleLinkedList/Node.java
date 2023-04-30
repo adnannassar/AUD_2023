@@ -1,4 +1,4 @@
-package LinkedList;
+package LinkedList.SimpleLinkedList;
 
 public class Node {
     int value;
