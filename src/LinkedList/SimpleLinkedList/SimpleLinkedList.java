@@ -146,14 +146,44 @@ public class SimpleLinkedList {
 
     // O(N)
     public void deleteLast() {
-        head = head.next;
-        Node ptr = head;
-        Node before_ptr = head;
-        while (ptr.next != null) {
-            before_ptr = ptr;
-            ptr = ptr.next;
+        if (head == last) {
+            head = last = null;
+        } else {
+            Node ptr = head;
+            while (ptr.next != last) {
+                ptr = ptr.next;
+            }
+            ptr.next = null;
+            last = ptr;
         }
-        before_ptr.next = ptr.next;
+    }
+
+
+    public void sort() {
+        if (head == null) {
+            return;
+        }
+
+        boolean swapped;
+        Node ptr1;
+        Node ptr2 = null;
+
+        do {
+            swapped = false;
+            ptr1 = head;
+
+            while (ptr1.next != ptr2) {
+                if (ptr1.value > ptr1.next.value) {
+                    int temp = ptr1.value;
+                    ptr1.value = ptr1.next.value;
+                    ptr1.next.value = temp;
+                    swapped = true;
+                }
+                ptr1 = ptr1.next;
+            }
+            ptr2 = ptr1;
+        }
+        while (swapped);
     }
 }
 

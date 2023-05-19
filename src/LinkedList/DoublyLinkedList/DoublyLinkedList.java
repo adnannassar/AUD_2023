@@ -1,8 +1,9 @@
 package LinkedList.DoublyLinkedList;
 
-public class DoublyLinkedList {
-    Node head;
-    Node last;
+
+public class DoublyLinkedList<T extends Comparable<T>> {
+    Node<T> head;
+    Node<T> last;
 
 
     public boolean isEmpty() {
@@ -16,7 +17,7 @@ public class DoublyLinkedList {
             int counter = 0;
             Node ptr = head;
             while (ptr != null) {
-                ptr = ptr.next;
+                ptr = ptr.getNext();
                 counter++;
             }
             return counter;
@@ -25,58 +26,62 @@ public class DoublyLinkedList {
 
 
     // append anfügen
-    public void add(int newValue) {
+    public void add(T newValue) {
         Node newNode = new Node(newValue, null, null);
         if (isEmpty()) {
             head = last = newNode;
         } else {
             Node ptr = head;
-            while (ptr.next != null) {
-                ptr = ptr.next;
+            while (ptr.getNext() != null) {
+                ptr = ptr.getNext();
             }
-            ptr.next = newNode;
-            newNode.previous = ptr;
+            ptr.setNext(newNode);
+            newNode.setPrevious(ptr);
             last = newNode;
         }
     }
 
-    public void add(int index, int element) {
-        Node newNode = new Node(element, null, null);
-        if (index < 0) {
+    public void add(int index, T element) {
+        if (index < 0 || index > size()) {
             System.out.println("Invalid Index!");
-        } else if (index == 0) {
-            if (isEmpty()) {
-                add(element);
-            } else {
-                newNode.next = head;
-                newNode.previous = null;
-                head.previous = newNode;
-                head = newNode;
+            return;
+        }
+
+        Node newNode = new Node(element, null, null);
+        if (index == 0) {
+            newNode.setNext(head);
+            newNode.setPrevious(null);
+            if (head != null) {
+                head.setPrevious(newNode);
             }
-        } else if (index >= size() - 1) {
-            add(element);
+            head = newNode;
+            if (last == null) {
+                last = newNode;
+            }
         } else {
-            int i = 0;
             Node ptr = head;
-            while (i != index - 1) {
-                ptr = ptr.next;
-                i++;
+            for (int i = 0; i < index - 1; i++) {
+                ptr = ptr.getNext();
             }
-            newNode.next = ptr.next;
-            newNode.previous = ptr;
-            newNode.next.previous = newNode;
-            ptr.next = newNode;
+            newNode.setNext(ptr.getNext());
+            newNode.setPrevious(ptr);
+            if (ptr.getNext() != null) {
+                ptr.getNext().setPrevious(newNode);
+            } else {
+                last = newNode;
+            }
+            ptr.setNext(newNode);
         }
     }
 
     private String toStringHelper() {
         String erg = "[";
         Node ptr = head;
-        while (ptr.next != null) {
-            erg += ptr.value + ", ";
-            ptr = ptr.next;
+        while (ptr.getNext() != null) {
+            erg += ptr.getValue() + ", ";
+            ptr = ptr.getNext();
         }
-        erg += ptr.value + "]";
+        erg += ptr.getNext() + "]";
         return erg;
     }
 
@@ -85,73 +90,122 @@ public class DoublyLinkedList {
         return toStringHelper();
     }
 
-    public boolean contains(int value) {
+    public boolean contains(T value) {
         Node ptr = head;
         while (ptr != null) {
-            if (ptr.value == value) {
+            if (ptr.getValue().equals(value)) {
                 return true;
             }
-            ptr = ptr.next;
+            ptr = ptr.getNext();
         }
         return false;
     }
 
-    public boolean remove(int value) {
+    public boolean remove(T value) {
         if (!isEmpty()) {
             Node ptr = head;
             Node before_ptr = null;
             while (ptr != null) {
-                if (ptr.value == value) {
-                    if (before_ptr == null) { // value at the first
+                if (ptr.getValue().equals(value)) {
+                    if (before_ptr == null) {
                         deleteFirst();
                     } else {
-                        before_ptr.next = ptr.next; // value in the middle
-                        if (ptr.value == last.value) {
+                        before_ptr.setNext(ptr.getNext());
+                        if (ptr.getNext() != null) {
+                            ptr.getNext().setPrevious(before_ptr);
+                        } else {
                             last = before_ptr;
                         }
                     }
                     return true;
                 }
                 before_ptr = ptr;
-                ptr = ptr.next;
+                ptr = ptr.getNext();
             }
         }
         return false;
     }
 
+
     public boolean remove_pos(int pos) {
-        if (pos < 0) {
+        if (pos < 0 || pos >= size()) {
+            System.out.println("Invalid position!");
             return false;
-        } else if (pos == 0) {
-            deleteFirst();
-            return true;
-        } else if (pos >= size()) {
-            deleteLast();
-            return true;
-        } else {
-            int i = 0;
-            Node ptr = head;
-            Node before_ptr = head;
-            while (i != pos) {
-                before_ptr = ptr;
-                ptr = ptr.next;
-                i++;
-            }
-            before_ptr.next = ptr.next;
-            return true;
         }
+
+        if (pos == 0) {
+            deleteFirst();
+        } else {
+            Node ptr = head;
+            for (int i = 0; i < pos - 1; i++) {
+                ptr = ptr.getNext();
+            }
+            if (ptr.getNext() == last) {
+                last = ptr;
+            } else {
+                ptr.getNext().getNext().setPrevious(ptr);
+            }
+            ptr.setNext(ptr.getNext().getNext());
+        }
+        return true;
     }
 
 
     // O(1)
     public void deleteFirst() {
-        head = head.next;
+        if (isEmpty()) {
+            System.out.println("The list is already empty!");
+            return;
+        }
+        head = head.getNext();
+        if (head != null) {
+            head.setPrevious(null);
+        } else {
+            last = null;
+        }
     }
 
 
     // O(1)
     public void deleteLast() {
-        last = last.previous;
+        if (isEmpty()) {
+            System.out.println("The list is already empty!");
+            return;
+        }
+        last = last.getPrevious();
+        if (last != null) {
+            last.setNext(null);
+        } else {
+            head = null;
+        }
+    }
+
+    public void bubbleSort() {
+        if (head == null) {
+            return;
+        }
+
+        boolean swapped;
+        Node<T> ptr1;
+        Node<T> ptr2 = null;
+        do {
+            swapped = false;
+            ptr1 = head;
+
+            while (ptr1.getNext() != ptr2) {
+                int compareResult = ptr1.getValue().compareTo(ptr2.getValue());
+                if (compareResult > 0) {
+                    T temp = ptr1.getValue();
+                    ptr1.setValue((T) ptr1.getNext().getValue());
+                    ptr1.getNext().setValue(temp);
+                    swapped = true;
+                }
+
+                ptr1 = ptr1.getNext();
+            }
+            ptr2 = ptr1;
+        }
+        while (swapped);
     }
 }
 
