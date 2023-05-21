@@ -13,7 +13,6 @@ public class Main {
         while (!stack.isEmpty()){
             System.out.println(stack.pop());
         }
-
          */
 
         stack.print();
