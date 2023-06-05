@@ -80,6 +80,10 @@ public class Compare {
                 case QUICKSORT:
                     QuickSort.quicksort(array, 0, array.length - 1);
                     break;
+
+                case HEAPSORT:
+                    HeapSort.heapsort(array, 0, array.length - 1);
+                    break;
             }
 
             // Zeitmessung stoppen
