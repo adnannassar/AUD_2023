@@ -52,6 +52,8 @@ public class ArrayList<T> {
         return new MyArrayListIterator();
     }
 
+
+
     private class MyArrayListIterator implements Iterator<T> {
         private int pointer = 0;
 

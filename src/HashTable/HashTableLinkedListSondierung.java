@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 public class HashTableLinkedListSondierung {
     private LinkedList[] table;
-
     int n;
 
     public HashTableLinkedListSondierung(int n) {
